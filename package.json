@@ -4,7 +4,8 @@
   "description": "Simple message microservice for handling message feedback",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node bin/service.js",
+    "lint": "./node_modules/.bin/eslint src/"
   },
   "repository": {
     "type": "git",

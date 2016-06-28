@@ -1,5 +1,7 @@
 import restify from 'restify';
 
+
+import { startDB } from '../db/config';
 import api from './api';
 
 
@@ -12,6 +14,8 @@ async function application () {
   app.use(restify.acceptParser(app.acceptable));
   app.use(restify.queryParser());
   app.use(restify.bodyParser());
+
+  await startDB();
 
   api(app);
 
