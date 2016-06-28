@@ -40,7 +40,7 @@ async function findAll () {
 async function findById (id) {
   return new Promise((resolve, reject) => {
     Message
-      .findOne({ _id: new mongoose.Types.ObjectId(id) })
+      .findOne({ _id: new mongoose.Types.ObjectId(id), active: true })
       .exec((err, message) => {
         if (err) reject(err);
         resolve(message);
