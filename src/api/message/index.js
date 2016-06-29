@@ -16,7 +16,7 @@ export async function list (req, res) {
 
 export async function create (req, res) {
   res.send(
-    200,
+    201,
     presenter(
       await message.create(
         getRepositories(),
