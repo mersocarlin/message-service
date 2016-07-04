@@ -56,6 +56,7 @@ async function update (id, message) {
   }
 
   dbMessage.name = message.name;
+  dbMessage.email = message.email;
   dbMessage.subject = message.subject;
   dbMessage.content = message.content;
   dbMessage.updatedAt = message.updatedAt;

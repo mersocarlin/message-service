@@ -18,6 +18,7 @@ function detail (message) {
   return {
     _id: message._id,
     name: message.name,
+    email: message.email,
     subject: message.subject,
     content: message.content,
     createdAt: message.createdAt,

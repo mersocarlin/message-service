@@ -15,6 +15,7 @@ function createData (data) {
 
   return {
     name: data.name,
+    email: data.email,
     subject: data.subject,
     content: data.content,
     active: true,
