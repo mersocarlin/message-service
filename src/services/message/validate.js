@@ -1,6 +1,9 @@
 import restify from 'restify';
 
 
+const SAFE_LENGTH = 5000;
+
+
 export default async function validate (data) {
   if (!data.name) {
     throw new restify.errors.BadRequestError('Please inform your name.');
@@ -16,6 +19,15 @@ export default async function validate (data) {
 
   if (!data.content) {
     throw new restify.errors.BadRequestError('Please inform your message.');
+  }
+
+  const isBigMessage = Object
+    .keys(data)
+    .filter(key => data[key].length > SAFE_LENGTH)
+    .length > 0;
+
+  if (isBigMessage) {
+    throw new restify.errors.BadRequestError('Your message is too big for me.');
   }
 }
 
