@@ -1,4 +1,4 @@
-import restify from 'restify';
+import { NotFoundError } from 'meaning-error';
 
 
 export default async function remove (repositories, id) {
@@ -7,7 +7,7 @@ export default async function remove (repositories, id) {
     .remove(id);
 
   if (result === 0) {
-    throw new restify.errors.NotFoundError('Could not find message to remove.');
+    throw new NotFoundError('Could not find message to remove.');
   }
 
   return true;

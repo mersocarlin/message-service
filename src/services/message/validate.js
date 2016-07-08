@@ -1,4 +1,4 @@
-import restify from 'restify';
+import { BadRequestError } from 'meaning-error';
 
 
 const SAFE_LENGTH = 5000;
@@ -6,19 +6,19 @@ const SAFE_LENGTH = 5000;
 
 export default async function validate (data) {
   if (!data.name) {
-    throw new restify.errors.BadRequestError('Please inform your name.');
+    throw new BadRequestError('Please inform your name.');
   }
 
   if (!data.email || !validateEmail(data.email)) {
-    throw new restify.errors.BadRequestError('Your email address seems not to be valid.');
+    throw new BadRequestError('Your email address seems to be invalid.');
   }
 
   if (!data.subject) {
-    throw new restify.errors.BadRequestError('Please inform your subject.');
+    throw new BadRequestError('Please inform your subject.');
   }
 
   if (!data.content) {
-    throw new restify.errors.BadRequestError('Please inform your message.');
+    throw new BadRequestError('Please inform your message.');
   }
 
   const isBigMessage = Object
@@ -27,7 +27,7 @@ export default async function validate (data) {
     .length > 0;
 
   if (isBigMessage) {
-    throw new restify.errors.BadRequestError('Your message is too big for me.');
+    throw new BadRequestError('Your message is too big for me.');
   }
 }
 

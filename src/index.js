@@ -1,4 +1,5 @@
-import restify from 'restify';
+import express from 'express';
+import bodyParser from 'body-parser';
 
 
 import { startDB } from '../db/config';
@@ -6,17 +7,10 @@ import api from './api';
 
 
 async function application (config) {
-  const app = restify.createServer({
-    name: 'message-service',
-    version: '1.0.0',
-  });
+  const app = express();
 
-  app.use(restify.acceptParser(app.acceptable));
-  app.use(restify.queryParser());
-  app.use(restify.bodyParser());
-  app.use(restify.CORS({
-    origins: (config.cors || '*').split(','),
-  }));
+  app.set('config', config);
+  app.use(bodyParser.json());
 
   await startDB();
 
@@ -28,9 +22,9 @@ async function application (config) {
 
 export const start = (config) => new Promise(async resolve => {
   const app = await application(config);
-
-  app.listen(config.http.port, () => {
-    console.info(`${app.name} listening at ${app.url}`); // eslint-disable-line no-console
+  app.listen(config.http.port, config.http.host, () => {
+    /* eslint-disable no-console */
+    console.info(`Server started at [ http://${config.http.host}:${config.http.port} ]`);
 
     resolve();
   });
