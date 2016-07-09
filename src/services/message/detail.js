@@ -1,4 +1,4 @@
-import restify from 'restify';
+import { NotFoundError } from 'meaning-error';
 
 
 export default async function detail (repositories, id) {
@@ -7,7 +7,7 @@ export default async function detail (repositories, id) {
     .findById(id);
 
   if (!message) {
-    throw new restify.errors.NotFoundError('Could not find message.');
+    throw new NotFoundError('Could not find message.');
   }
 
   return message;

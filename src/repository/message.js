@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import restify from 'restify';
+import { BadRequestError } from 'meaning-error';
 
 
 const Message = mongoose.model('messages');
@@ -52,7 +52,7 @@ async function update (id, message) {
   const dbMessage = await findById(id);
 
   if (!dbMessage) {
-    throw new restify.errors.BadRequestError('Message not found.');
+    throw new BadRequestError('Message not found.');
   }
 
   dbMessage.name = message.name;
@@ -73,7 +73,7 @@ async function remove (id) {
   const dbMessage = await findById(id);
 
   if (!dbMessage) {
-    throw new restify.errors.BadRequestError('Message not found.');
+    throw new BadRequestError('Message not found.');
   }
 
   dbMessage.active = false;
