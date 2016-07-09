@@ -24,7 +24,7 @@ export const start = (config) => new Promise(async resolve => {
   const app = await application(config);
   app.listen(config.http.port, config.http.host, () => {
     /* eslint-disable no-console */
-    console.info(`Server started at [ http://${config.http.host}:${config.http.port} ]`);
+    console.info(`message-service started at [ http://${config.http.host}:${config.http.port} ]`);
 
     resolve();
   });
