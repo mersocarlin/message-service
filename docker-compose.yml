@@ -11,7 +11,7 @@ services:
     environment:
       - NODE_ENV=development
       - HTTP_PORT=3000
-      - CORS=
+      - ACCESS_KEY=
     depends_on:
       - mongodb
     links:
