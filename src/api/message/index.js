@@ -9,7 +9,7 @@ export async function list (req, res) {
     .send(
       presenter(
         await message.list(
-          getRepositories()
+          getRepositories(req.mongo)
         )
       )
     );
@@ -21,7 +21,7 @@ export async function create (req, res) {
     .send(
       presenter(
         await message.create(
-          getRepositories(),
+          getRepositories(req.mongo),
           req.body,
         )
       )
@@ -34,7 +34,7 @@ export async function detail (req, res) {
     .send(
       presenter(
         await message.detail(
-          getRepositories(),
+          getRepositories(req.mongo),
           req.params.id,
         )
       )
@@ -49,7 +49,7 @@ export async function update (req, res) {
     .send(
       presenter(
         await message.update(
-          getRepositories(),
+          getRepositories(req.mongo),
           req.body,
         )
       )
@@ -62,15 +62,15 @@ export async function remove (req, res) {
     .send(
       presenter(
         await message.remove(
-          getRepositories(),
+          getRepositories(req.mongo),
           req.params.id,
         )
       )
     );
 }
 
-function getRepositories () {
+function getRepositories (mongo) {
   return {
-    message: messageRepository(),
+    message: messageRepository(mongo),
   };
 }

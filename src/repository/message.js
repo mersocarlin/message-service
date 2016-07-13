@@ -1,33 +1,29 @@
-import mongoose from 'mongoose';
 import { NotFoundError } from 'meaning-error';
 
 
-const Message = mongoose.model('messages');
-
-
-export default function messageRepository () {
+export default function messageRepository (model) {
   return {
-    create: create.bind(this),
-    findAll: findAll.bind(this),
-    findById: findById.bind(this),
+    create: create.bind(this, model),
+    findAll: findAll.bind(this, model),
+    findById: findById.bind(this, model),
     update: update.bind(this),
     remove: remove.bind(this),
   };
 }
 
 
-async function create (message) {
+async function create (Model, message) {
   return new Promise((resolve, reject) => {
-    new Message({ ...message })
+    new Model({ ...message })
       .save()
       .then(dbMessage => resolve(dbMessage))
       .catch(err => reject(err));
   });
 }
 
-async function findAll () {
+async function findAll (Model) {
   return new Promise((resolve, reject) => {
-    Message
+    Model
       .find({ active: true })
       .sort('-createdAt')
       .exec((err, messages) => {
@@ -37,10 +33,10 @@ async function findAll () {
   });
 }
 
-async function findById (id) {
+async function findById (Model, id) {
   return new Promise((resolve, reject) => {
-    Message
-      .findOne({ _id: new mongoose.Types.ObjectId(id), active: true })
+    Model
+      .findOne({ _id: id, active: true })
       .exec((err, message) => {
         if (err) reject(err);
         resolve(message);
