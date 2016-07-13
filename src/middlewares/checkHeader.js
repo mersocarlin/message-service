@@ -7,9 +7,9 @@ export default (req, res, next) => {
   }
 
   const config = req.app.get('config');
-  if (req.headers['x-client-id'] !== config.accessKey) {
+  if (req.headers['x-client-id'] !== config.env.accessKey) {
     throw new BadRequestError(`Cannot GET ${req.originalUrl}`);
   }
 
-  return next();
+  next();
 };
