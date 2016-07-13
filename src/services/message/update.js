@@ -1,7 +1,12 @@
+import { NotFoundError } from 'meaning-error';
 import validate from './validate';
 
 
 export default async function update (repositories, data) {
+  if (!data.id) {
+    throw new NotFoundError('Could not find message.');
+  }
+
   const message = updateData(data);
   await validate(message);
 

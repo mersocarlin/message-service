@@ -9,7 +9,11 @@ export default async function validate (data) {
     throw new BadRequestError('Please inform your name.');
   }
 
-  if (!data.email || !validateEmail(data.email)) {
+  if (!data.email) {
+    throw new BadRequestError('Please inform your email.');
+  }
+
+  if (!validateEmail(data.email)) {
     throw new BadRequestError('Your email address seems to be invalid.');
   }
 

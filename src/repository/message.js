@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { BadRequestError } from 'meaning-error';
+import { NotFoundError } from 'meaning-error';
 
 
 const Message = mongoose.model('messages');
@@ -52,7 +52,7 @@ async function update (id, message) {
   const dbMessage = await findById(id);
 
   if (!dbMessage) {
-    throw new BadRequestError('Message not found.');
+    throw new NotFoundError('Message not found.');
   }
 
   dbMessage.name = message.name;
@@ -73,15 +73,15 @@ async function remove (id) {
   const dbMessage = await findById(id);
 
   if (!dbMessage) {
-    throw new BadRequestError('Message not found.');
+    throw new NotFoundError('Message not found.');
   }
 
   dbMessage.active = false;
 
   return new Promise((resolve, reject) => {
     dbMessage.save(err => {
-      if (err) reject(0);
-      resolve(1);
+      if (err) reject(false);
+      resolve(true);
     });
   });
 }
