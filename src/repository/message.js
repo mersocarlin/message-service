@@ -6,24 +6,27 @@ export default function messageRepository (model) {
     create: create.bind(this, model),
     findAll: findAll.bind(this, model),
     findById: findById.bind(this, model),
-    update: update.bind(this),
-    remove: remove.bind(this),
+    update: update.bind(this, model),
+    remove: remove.bind(this, model),
   };
 }
 
 
-async function create (Model, message) {
+async function create (model, message) {
   return new Promise((resolve, reject) => {
-    new Model({ ...message })
-      .save()
-      .then(dbMessage => resolve(dbMessage))
-      .catch(err => reject(err));
+    model.create(
+      message,
+      (err, createdMessage) => {
+        if (err) reject(err);
+        resolve(createdMessage);
+      }
+    );
   });
 }
 
-async function findAll (Model) {
+async function findAll (model) {
   return new Promise((resolve, reject) => {
-    Model
+    model
       .find({ active: true })
       .sort('-createdAt')
       .exec((err, messages) => {
@@ -33,9 +36,9 @@ async function findAll (Model) {
   });
 }
 
-async function findById (Model, id) {
+async function findById (model, id) {
   return new Promise((resolve, reject) => {
-    Model
+    model
       .findOne({ _id: id, active: true })
       .exec((err, message) => {
         if (err) reject(err);
@@ -44,11 +47,11 @@ async function findById (Model, id) {
   });
 }
 
-async function update (id, message) {
-  const dbMessage = await findById(id);
+async function update (model, id, message) {
+  const dbMessage = await findById(model, id);
 
   if (!dbMessage) {
-    throw new NotFoundError('Message not found.');
+    throw new NotFoundError('Could not find message.');
   }
 
   dbMessage.name = message.name;
@@ -58,26 +61,36 @@ async function update (id, message) {
   dbMessage.updatedAt = message.updatedAt;
 
   return new Promise((resolve, reject) => {
-    dbMessage.save(err => {
-      if (err) reject(err);
-      resolve(dbMessage);
-    });
+    model.update(
+      { _id: id },
+      { $set: dbMessage },
+      {},
+      (err) => {
+        if (err) reject(err);
+        resolve(dbMessage);
+      }
+    );
   });
 }
 
-async function remove (id) {
-  const dbMessage = await findById(id);
+async function remove (model, id) {
+  const dbMessage = await findById(model, id);
 
   if (!dbMessage) {
-    throw new NotFoundError('Message not found.');
+    throw new NotFoundError('Could not find message.');
   }
 
   dbMessage.active = false;
 
   return new Promise((resolve, reject) => {
-    dbMessage.save(err => {
-      if (err) reject(false);
-      resolve(true);
-    });
+    model.update(
+      { _id: id },
+      { $set: dbMessage },
+      {},
+      (err) => {
+        if (err) reject(false);
+        resolve(true);
+      }
+    );
   });
 }
