@@ -6,9 +6,9 @@ export default async function remove (repositories, id) {
     .message
     .remove(id);
 
-  if (result === 0) {
+  if (!result) {
     throw new NotFoundError('Could not find message to remove.');
   }
 
-  return true;
+  return result;
 }

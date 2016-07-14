@@ -1,33 +1,32 @@
-import mongoose from 'mongoose';
-import { BadRequestError } from 'meaning-error';
+import { NotFoundError } from 'meaning-error';
 
 
-const Message = mongoose.model('messages');
-
-
-export default function messageRepository () {
+export default function messageRepository (model) {
   return {
-    create: create.bind(this),
-    findAll: findAll.bind(this),
-    findById: findById.bind(this),
-    update: update.bind(this),
-    remove: remove.bind(this),
+    create: create.bind(this, model),
+    findAll: findAll.bind(this, model),
+    findById: findById.bind(this, model),
+    update: update.bind(this, model),
+    remove: remove.bind(this, model),
   };
 }
 
 
-async function create (message) {
+async function create (model, message) {
   return new Promise((resolve, reject) => {
-    new Message({ ...message })
-      .save()
-      .then(dbMessage => resolve(dbMessage))
-      .catch(err => reject(err));
+    model.create(
+      message,
+      (err, createdMessage) => {
+        if (err) reject(err);
+        resolve(createdMessage);
+      }
+    );
   });
 }
 
-async function findAll () {
+async function findAll (model) {
   return new Promise((resolve, reject) => {
-    Message
+    model
       .find({ active: true })
       .sort('-createdAt')
       .exec((err, messages) => {
@@ -37,10 +36,10 @@ async function findAll () {
   });
 }
 
-async function findById (id) {
+async function findById (model, id) {
   return new Promise((resolve, reject) => {
-    Message
-      .findOne({ _id: new mongoose.Types.ObjectId(id), active: true })
+    model
+      .findOne({ _id: id, active: true })
       .exec((err, message) => {
         if (err) reject(err);
         resolve(message);
@@ -48,11 +47,11 @@ async function findById (id) {
   });
 }
 
-async function update (id, message) {
-  const dbMessage = await findById(id);
+async function update (model, id, message) {
+  const dbMessage = await findById(model, id);
 
   if (!dbMessage) {
-    throw new BadRequestError('Message not found.');
+    throw new NotFoundError('Could not find message.');
   }
 
   dbMessage.name = message.name;
@@ -62,26 +61,36 @@ async function update (id, message) {
   dbMessage.updatedAt = message.updatedAt;
 
   return new Promise((resolve, reject) => {
-    dbMessage.save(err => {
-      if (err) reject(err);
-      resolve(dbMessage);
-    });
+    model.update(
+      { _id: id },
+      { $set: dbMessage },
+      {},
+      (err) => {
+        if (err) reject(err);
+        resolve(dbMessage);
+      }
+    );
   });
 }
 
-async function remove (id) {
-  const dbMessage = await findById(id);
+async function remove (model, id) {
+  const dbMessage = await findById(model, id);
 
   if (!dbMessage) {
-    throw new BadRequestError('Message not found.');
+    throw new NotFoundError('Could not find message.');
   }
 
   dbMessage.active = false;
 
   return new Promise((resolve, reject) => {
-    dbMessage.save(err => {
-      if (err) reject(0);
-      resolve(1);
-    });
+    model.update(
+      { _id: id },
+      { $set: dbMessage },
+      {},
+      (err) => {
+        if (err) reject(false);
+        resolve(true);
+      }
+    );
   });
 }

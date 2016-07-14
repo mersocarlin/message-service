@@ -2,17 +2,18 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 
-import { startDB } from '../db/config';
 import api from './api';
 
 
-async function application (config) {
+export async function application (config) {
   const app = express();
 
   app.set('config', config);
   app.use(bodyParser.json());
-
-  await startDB();
+  app.use((req, res, next) => {
+    req.mongo = config.mongo;
+    next();
+  });
 
   api(app);
 
@@ -22,9 +23,9 @@ async function application (config) {
 
 export const start = (config) => new Promise(async resolve => {
   const app = await application(config);
-  app.listen(config.http.port, config.http.host, () => {
+  app.listen(config.env.http.port, config.env.http.host, () => {
     /* eslint-disable no-console */
-    console.info(`message-service started at [ http://${config.http.host}:${config.http.port} ]`);
+    console.info(`message-service started at [ http://${config.env.http.host}:${config.env.http.port} ]`);
 
     resolve();
   });
