@@ -6,5 +6,8 @@ export const config = {
     host: env.HTTP_HOST || '0.0.0.0',
     port: env.PORT || env.HTTP_PORT || '3000',
   },
-  accessKey: env.ACCESS_KEY || '',
+  accessKey: env.ACCESS_KEY,
+  db: {
+    connectionString: env.MONGODB_URI,
+  },
 };

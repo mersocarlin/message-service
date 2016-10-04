@@ -3,9 +3,9 @@ import mongoose from 'mongoose';
 import './models/message';
 
 
-export async function startDB () {
+export function startDB (config) {
   return new Promise((resolve, reject) => {
-    mongoose.connect('mongodb' + '/db-messages', (err) => {
+    mongoose.connect(config.env.db.connectionString, (err) => {
       if (err) {
         console.log('ERROR ', err);
         reject();
