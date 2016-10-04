@@ -1,9 +1,10 @@
 version: '2'
 services:
   api:
-    build: .
-    working_dir: /usr/src/app
-    command: ./entrypoint.sh
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run dev
     volumes:
       - .:/usr/src/app
     ports:
@@ -14,8 +15,6 @@ services:
       - ACCESS_KEY=
     depends_on:
       - mongodb
-    links:
-      - mongodb:mongodb
 
   mongodb:
     image: mongo
