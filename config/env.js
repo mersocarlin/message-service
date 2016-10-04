@@ -1,8 +1,10 @@
+const { env } = process;
+
 export const config = {
-  environment: process.env.NODE_ENV || 'development',
+  environment: env.NODE_ENV || 'development',
   http: {
-    host: process.env.HTTP_HOST || '0.0.0.0',
-    port: process.env.HTTP_PORT || '3000',
+    host: env.HTTP_HOST || '0.0.0.0',
+    port: env.PORT || env.HTTP_PORT || '3000',
   },
-  accessKey: process.env.ACCESS_KEY || '',
+  accessKey: env.ACCESS_KEY || '',
 };
