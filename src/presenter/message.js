@@ -15,6 +15,7 @@ function list (messages) {
 
 
 function detail (message) {
+  /* eslint-disable no-underscore-dangle */
   return {
     id: message._id,
     name: message.name,

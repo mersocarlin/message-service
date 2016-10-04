@@ -11,6 +11,7 @@ export async function application (config) {
   app.set('config', config);
   app.use(bodyParser.json());
   app.use((req, res, next) => {
+    /* eslint-disable no-param-reassign */
     req.mongo = config.mongo;
     next();
   });

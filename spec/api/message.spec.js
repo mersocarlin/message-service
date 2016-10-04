@@ -12,6 +12,7 @@ const mongo = new Mongo();
 
 describe('message api', () => {
   let app;
+  let messages;
 
   before(async function () {
     env.accessKey = '123';
@@ -21,6 +22,8 @@ describe('message api', () => {
     for (const message of messageFixture) {
       await service.create(getRepositories(mongo), message);
     }
+
+    messages = await service.list(getRepositories(mongo));
   });
 
   describe('list', () => {
@@ -44,9 +47,7 @@ describe('message api', () => {
   });
 
   describe('detail', () => {
-    it('should throw message not found', async function (done) {
-      const messages = await service.list(getRepositories(mongo));
-
+    it('should throw message not found', function (done) {
       request(app)
         .get('/api/messages/123456')
         .set('x-client-id', '123')
@@ -67,9 +68,7 @@ describe('message api', () => {
         });
     });
 
-    it('should detail message', async function (done) {
-      const messages = await service.list(getRepositories(mongo));
-
+    it('should detail message', function (done) {
       request(app)
         .get(`/api/messages/${messages[0]._id}`)
         .set('x-client-id', '123')
@@ -179,9 +178,7 @@ describe('message api', () => {
         });
     });
 
-    it('should throw error when sending invalid request body', async function (done) {
-      const messages = await service.list(getRepositories(mongo));
-
+    it('should throw error when sending invalid request body', function (done) {
       request(app)
         .put(`/api/messages/${messages[0]._id}`)
         .send({
@@ -208,9 +205,7 @@ describe('message api', () => {
         });
     });
 
-    it('should update message', async function (done) {
-      const messages = await service.list(getRepositories(mongo));
-
+    it('should update message', function (done) {
       request(app)
         .put(`/api/messages/${messages[0]._id}`)
         .send({
@@ -267,9 +262,7 @@ describe('message api', () => {
         });
     });
 
-    it('should delete message', async function (done) {
-      const messages = await service.list(getRepositories(mongo));
-
+    it('should delete message', function (done) {
       request(app)
         .del(`/api/messages/${messages[0]._id}`)
         .set('x-client-id', '123')
