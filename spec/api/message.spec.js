@@ -2,28 +2,21 @@ import { expect } from 'chai';
 import request from 'supertest';
 
 import { getRepositories } from '../spec-helper';
-import messageFixture from '../fixtures/message';
-import Mongo from '../repository/mockMongo';
+import { messageRepositoryStub } from '../stub';
 import { application } from '../../src/';
 import * as service from '../../src/services/message';
-import { config as env } from '../../config/env';
-
-const mongo = new Mongo();
+import { default as env } from '../../config/env';
 
 describe('message api', () => {
   let app;
   let messages;
 
   before(async function () {
+    const repositories = getRepositories();
     env.accessKey = '123';
+    app = await application({ env, repositories });
 
-    app = await application({ env, mongo });
-
-    for (const message of messageFixture) {
-      await service.create(getRepositories(mongo), message);
-    }
-
-    messages = await service.list(getRepositories(mongo));
+    messages = await service.list(repositories, {});
   });
 
   describe('list', () => {
@@ -38,9 +31,18 @@ describe('message api', () => {
             return;
           }
 
-          expect(res.body).to.have.length(5);
-          expect(res.body[0]).to.not.have.property('updatedAt');
-          expect(res.body[0]).to.not.have.property('active');
+          expect(res.body).to.be.instanceof(Array);
+          res.body
+            .forEach(message => {
+              expect(message).to.have.property('id');
+              expect(message).to.have.property('name');
+              expect(message).to.have.property('email');
+              expect(message).to.have.property('subject');
+              expect(message).to.have.property('content');
+              expect(message).to.have.property('createdAt');
+              expect(message).to.not.have.property('updatedAt');
+              expect(message).to.not.have.property('active');
+            });
           done();
         });
     });
@@ -230,7 +232,7 @@ describe('message api', () => {
           expect(res.body).to.have.property('createdAt');
           expect(res.body).to.not.have.property('updatedAt');
           expect(res.body).to.not.have.property('active');
-          expect(res.body.id).to.be.equal(messages[0]._id);
+          expect(res.body.id).to.be.equal(messages[0]._id.toString());
           expect(res.body.name).to.be.equal('Bugs Bunny');
           expect(res.body.email).to.be.equal('bugs@bunny.com');
           expect(res.body.subject).to.be.equal('What\'s up, Doc!');
@@ -266,7 +268,7 @@ describe('message api', () => {
       request(app)
         .del(`/api/messages/${messages[0]._id}`)
         .set('x-client-id', '123')
-        .expect(200)
+        .expect(204)
         .end(done);
     });
   });

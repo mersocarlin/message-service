@@ -1,4 +1,4 @@
-import messageRepository from '../src/repository/message';
+import messageRepository from './stub/message-repository';
 
 
 export function createBigString () {
@@ -12,8 +12,8 @@ export function createBigString () {
   return text;
 }
 
-export function getRepositories (mongo) {
+export function getRepositories () {
   return {
-    message: messageRepository(mongo),
+    message: messageRepository(),
   };
 }

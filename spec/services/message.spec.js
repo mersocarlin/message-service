@@ -1,18 +1,16 @@
 import { expect } from 'chai';
 import * as service from '../../src/services/message';
 import { createBigString, getRepositories } from '../spec-helper';
-import messageFixture from '../fixtures/message';
-import Mongo from '../repository/mockMongo';
-
-
-const mongo = new Mongo();
+import { messageRepositoryStub } from '../stub';
 
 
 describe('message-service', () => {
+  let repositories;
+  let messages;
+
   before(async function () {
-    for (const message of messageFixture) {
-      await service.create(getRepositories(mongo), message);
-    }
+    repositories = getRepositories();
+    messages = await service.list(repositories, {});
   });
 
   describe('create', () => {
@@ -24,7 +22,7 @@ describe('message-service', () => {
         content: 'I\'m sending a new message.',
       };
 
-      const message = await service.create(getRepositories(mongo), data);
+      const message = await service.create(repositories, data);
       expect(message).to.have.property('_id');
       expect(message).to.have.property('createdAt');
       expect(message).to.have.property('updatedAt');
@@ -47,7 +45,7 @@ describe('message-service', () => {
         arg4: new Date(),
       };
 
-      const message = await service.create(getRepositories(mongo), data);
+      const message = await service.create(repositories, data);
       expect(message).to.have.property('_id');
       expect(message).to.have.property('createdAt');
       expect(message).to.have.property('updatedAt');
@@ -71,7 +69,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -91,7 +89,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -111,7 +109,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -131,7 +129,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -151,7 +149,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -171,7 +169,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -191,7 +189,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -211,7 +209,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -231,7 +229,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -251,7 +249,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -266,7 +264,7 @@ describe('message-service', () => {
   describe('update', () => {
     it('should update message', async function () {
       const createdMessage = await service.create(
-        getRepositories(mongo),
+        repositories,
         {
           name: 'say my name',
           email: 'say@myemail.com',
@@ -274,8 +272,7 @@ describe('message-service', () => {
           content: 'say my message',
         }
       );
-
-      const message = await service.update(getRepositories(mongo),
+      const message = await service.update(repositories,
         {
           id: createdMessage._id,
           name: 'Frank Abagnale',
@@ -301,7 +298,7 @@ describe('message-service', () => {
 
     it('should update message with object containing extra properties', async function () {
       const createdMessage = await service.create(
-        getRepositories(mongo),
+        repositories,
         {
           name: 'say my name',
           email: 'say@myemail.com',
@@ -310,7 +307,7 @@ describe('message-service', () => {
         }
       );
 
-      const message = await service.update(getRepositories(mongo),
+      const message = await service.update(repositories,
         {
           id: createdMessage._id,
           name: 'Darth Vader',
@@ -342,7 +339,7 @@ describe('message-service', () => {
       it('should throw for message without id', async function () {
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), {});
+          await service.update(repositories, {});
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('NotFoundError');
@@ -353,7 +350,7 @@ describe('message-service', () => {
       it('should throw for message that does not exist', async function () {
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo),
+          await service.update(repositories,
             {
               id: 'abc123',
               name: 'new name',
@@ -370,7 +367,7 @@ describe('message-service', () => {
       });
 
       it('should throw for message with empty name', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: '',
@@ -381,7 +378,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -392,7 +389,7 @@ describe('message-service', () => {
       });
 
       it('should throw for message with empty email', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: 'name',
@@ -403,7 +400,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -414,7 +411,7 @@ describe('message-service', () => {
       });
 
       it('should throw for message with wrong email format', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: 'name',
@@ -425,7 +422,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -436,7 +433,7 @@ describe('message-service', () => {
       });
 
       it('should throw for message with empty subject', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: 'name',
@@ -447,7 +444,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -458,7 +455,7 @@ describe('message-service', () => {
       });
 
       it('should throw for message with empty content', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: 'name',
@@ -469,7 +466,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -480,7 +477,7 @@ describe('message-service', () => {
       });
 
       it('should throw for big name string', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: createBigString(),
@@ -491,7 +488,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -502,7 +499,7 @@ describe('message-service', () => {
       });
 
       it('should throw for big email string', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: 'John Doe',
@@ -513,7 +510,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -524,7 +521,7 @@ describe('message-service', () => {
       });
 
       it('should throw for big subject string', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: 'John Doe',
@@ -535,7 +532,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.update(getRepositories(mongo), data);
+          await service.update(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -546,7 +543,7 @@ describe('message-service', () => {
       });
 
       it('should throw for big content string', async function () {
-        const messages = await service.list(getRepositories(mongo));
+        const messages = await service.list(repositories);
         const data = {
           id: messages[0]._id,
           name: 'John Doe',
@@ -557,7 +554,7 @@ describe('message-service', () => {
 
         let hasError = false;
         try {
-          await service.create(getRepositories(mongo), data);
+          await service.create(repositories, data);
         } catch (e) {
           hasError = true;
           expect(e.name).to.be.equal('BadRequestError');
@@ -571,58 +568,62 @@ describe('message-service', () => {
 
   describe('list', () => {
     it('should list all messages', async function () {
-      const messages = await service.list(getRepositories(mongo));
+      const messages = await service.list(repositories);
 
-      expect(messages).to.have.length(9);
-      expect(messages[0]).to.have.property('_id');
-      expect(messages[0]).to.have.property('name');
-      expect(messages[0]).to.have.property('email');
-      expect(messages[0]).to.have.property('subject');
-      expect(messages[0]).to.have.property('content');
-      expect(messages[0]).to.have.property('active');
-      expect(messages[0]).to.have.property('createdAt');
-      expect(messages[0]).to.have.property('updatedAt');
+      expect(messages).to.be.instanceof(Array);
+      messages
+        .forEach(message => {
+          expect(message).to.have.property('_id');
+          expect(message).to.have.property('name');
+          expect(message).to.have.property('email');
+          expect(message).to.have.property('subject');
+          expect(message).to.have.property('content');
+          expect(message).to.have.property('active');
+          expect(message).to.have.property('createdAt');
+          expect(message).to.have.property('updatedAt');
+        });
     });
   });
 
   describe('remove', () => {
     it('should delete message', async function () {
-      const message = await service.create(getRepositories(mongo), {
+      const message = await service.create(repositories, {
         name: 'DELETED NAME',
         email: 'deleted@mail.com',
         subject: 'DELETED SUBJECT',
         content: 'DELETED MESSAGE',
       });
 
-      const removed = await service.remove(getRepositories(mongo), message._id);
-      expect(removed).to.be.equal(true);
+      await service.remove(repositories, message._id);
     });
 
     it('should ommit deleted message from list', async function () {
-      const message = await service.create(getRepositories(mongo), {
+      const message = await service.create(repositories, {
         name: 'DELETED NAME',
         email: 'deleted@mail.com',
         subject: 'DELETED SUBJECT',
         content: 'DELETED MESSAGE',
       });
 
-      await service.remove(getRepositories(mongo), message._id);
+      const countBeforeRemove = await service.list(repositories, {});
+      await service.remove(repositories, message._id);
+      const countAfterRemove = await service.list(repositories, {});
 
-      expect(await service.list(getRepositories(mongo))).to.have.length(9);
+      expect(countAfterRemove).to.have.lengthOf(countBeforeRemove.length - 1);
     });
 
     it('should not update deleted message', async function () {
-      const message = await service.create(getRepositories(mongo), {
+      const message = await service.create(repositories, {
         name: 'DELETED NAME',
         email: 'deleted@mail.com',
         subject: 'DELETED SUBJECT',
         content: 'DELETED MESSAGE',
       });
-      await service.remove(getRepositories(mongo), message._id);
+      await service.remove(repositories, message._id);
 
       let hasError = false;
       try {
-        await service.update(getRepositories(mongo), message);
+        await service.update(repositories, message);
       } catch (e) {
         hasError = true;
         expect(e.name).to.be.equal('NotFoundError');
@@ -633,8 +634,8 @@ describe('message-service', () => {
 
   describe('detail', () => {
     it('should detail message', async function () {
-      const messages = await service.list(getRepositories(mongo));
-      const message = await service.detail(getRepositories(mongo), messages[0]._id);
+      const messages = await service.list(repositories);
+      const message = await service.detail(repositories, messages[0]._id);
 
       expect(message).to.have.property('_id');
       expect(message).to.have.property('name');
@@ -649,7 +650,7 @@ describe('message-service', () => {
     it('should throw for message not found', async function () {
       let hasError = false;
       try {
-        await service.detail(getRepositories(mongo), 'abc123');
+        await service.detail(repositories, 'abc123');
       } catch (e) {
         hasError = true;
         expect(e.name).to.be.equal('NotFoundError');
