@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-import './models/message';
-
 
 export function startDB (config) {
   return new Promise((resolve, reject) => {

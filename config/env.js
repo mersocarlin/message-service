@@ -1,6 +1,6 @@
 const { env } = process;
 
-export const config = {
+export default {
   environment: env.NODE_ENV || 'development',
   http: {
     host: env.HTTP_HOST || '0.0.0.0',

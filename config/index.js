@@ -1,9 +1,12 @@
 import mongoose from 'mongoose';
 
-import { config as env } from './env';
+import { default as env } from './env';
+import { default as model } from '../db/models/message';
+import messageRepository from '../src/repository/message';
 
-
-export const config = {
+export default {
   env,
-  mongo: mongoose.model('messages'),
+  repositories: {
+    message: messageRepository(model),
+  },
 };

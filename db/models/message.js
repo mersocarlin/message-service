@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
+const Schema = mongoose.Schema;
 
 
-const MessageSchema = new mongoose.Schema({
+const MessageSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   subject: { type: String, required: true },
@@ -11,4 +12,5 @@ const MessageSchema = new mongoose.Schema({
   updatedAt: { type: Date, required: true },
 });
 
-mongoose.model('messages', MessageSchema);
+
+export default mongoose.model('messages', MessageSchema);
