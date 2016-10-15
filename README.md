@@ -1,4 +1,4 @@
-# message-service
+# message-service [![Travis][build-badge]][build]
 
 Microservice for handling message feedback
 
@@ -19,3 +19,6 @@ docker-compose run --rm --service-ports test
 # License
 
 MIT
+
+[build-badge]: https://travis-ci.org/mersocarlin/message-service.svg
+[build]: https://travis-ci.org/mersocarlin/message-service
