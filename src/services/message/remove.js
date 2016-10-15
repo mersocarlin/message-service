@@ -2,13 +2,19 @@ import { NotFoundError } from 'meaning-error';
 
 
 export default async function remove (repositories, id) {
-  const result = await repositories
-    .message
-    .remove(id);
-
-  if (!result) {
-    throw new NotFoundError('Could not find message to remove.');
+  if (!id) {
+    throw new NotFoundError('Could not find message. Id not set.');
   }
 
-  return result;
+  const dbMessage = await repositories
+    .message
+    .findById(id);
+
+  if (!dbMessage) {
+    throw new NotFoundError('Could not find message.');
+  }
+
+  await repositories
+    .message
+    .remove(id);
 }

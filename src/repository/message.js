@@ -1,5 +1,3 @@
-import { NotFoundError } from 'meaning-error';
-
 
 export default function messageRepository (model) {
   return {
@@ -42,24 +40,17 @@ async function findById (model, id) {
       .findOne({ _id: id, active: true })
       .exec((err, message) => {
         if (err) reject(err);
+        if (!message) {
+          resolve(null);
+          return;
+        }
+
         resolve(message);
       });
   });
 }
 
-async function update (model, id, message) {
-  const dbMessage = await findById(model, id);
-
-  if (!dbMessage) {
-    throw new NotFoundError('Could not find message.');
-  }
-
-  dbMessage.name = message.name;
-  dbMessage.email = message.email;
-  dbMessage.subject = message.subject;
-  dbMessage.content = message.content;
-  dbMessage.updatedAt = message.updatedAt;
-
+async function update (model, id, dbMessage) {
   return new Promise((resolve, reject) => {
     model.update(
       { _id: id },
@@ -74,18 +65,14 @@ async function update (model, id, message) {
 }
 
 async function remove (model, id) {
-  const dbMessage = await findById(model, id);
-
-  if (!dbMessage) {
-    throw new NotFoundError('Could not find message.');
-  }
-
-  dbMessage.active = false;
-
   return new Promise((resolve, reject) => {
     model.update(
       { _id: id },
-      { $set: dbMessage },
+      {
+        $set: {
+          active: false,
+        },
+      },
       {},
       (err) => {
         if (err) reject(false);
