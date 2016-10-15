@@ -23,3 +23,14 @@ services:
       - "27017:27017"
     volumes:
       - ./databases:/data/db
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run test
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - NODE_ENV=test
+      - HTTP_PORT=3000
